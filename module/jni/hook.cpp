@@ -12,10 +12,24 @@ jstring my_native_get(JNIEnv *env, jclass clazz, jstring keyJ, jstring defJ) {
 
     jstring hooked_result = nullptr;
 
-    if (strcmp(key, "ro.build.version.emui") == 0) {
-        hooked_result = env->NewStringUTF("EmotionUI_8.0.0");
-    } else if (strcmp(key, "ro.build.hw_emui_api_level") == 0) {
-        hooked_result = env->NewStringUTF("21");
+    if (strcmp(key, "ro.product.brand") == 0) {
+        hooked_result = env->NewStringUTF("Xiaomi");
+    } else if (strcmp(key, "ro.product.manufacturer") == 0) {
+        hooked_result = env->NewStringUTF("Xiaomi");
+    } else if (strcmp(key, "ro.product.model") == 0) {
+        hooked_result = env->NewStringUTF("23127PN0CC");
+    } else if (strcmp(key, "ro.build.version.incremental") == 0) {
+        hooked_result = env->NewStringUTF("V14.0.6.0.UMCCNXM");
+    } else if (strcmp(key, "ro.miui.ui.version.code") == 0) {
+        hooked_result = env->NewStringUTF("14");
+    } else if (strcmp(key, "ro.miui.ui.version.name") == 0) {
+        hooked_result = env->NewStringUTF("V14");
+    } else if (strcmp(key, "ro.miui.version.code_time") == 0) {
+        hooked_result = env->NewStringUTF("230618");
+    } else if (strcmp(key, "ro.product.device") == 0) {
+        hooked_result = env->NewStringUTF("shennong");
+    } else if (strcmp(key, "ro.product.name") == 0) {
+        hooked_result = env->NewStringUTF("shennong");
     }
 
     env->ReleaseStringUTFChars(keyJ, key);
@@ -31,21 +45,47 @@ jstring my_native_get(JNIEnv *env, jclass clazz, jstring keyJ, jstring defJ) {
 void hookBuild(JNIEnv *env) {
     LOGD("hook Build\n");
     jclass build_class = env->FindClass("android/os/Build");
-    jstring new_brand = env->NewStringUTF("Huawei");
-    jstring new_manufacturer = env->NewStringUTF("HUAWEI");
-
+    jstring new_brand = env->NewStringUTF("Xiaomi");
+    jstring new_manufacturer = env->NewStringUTF("Xiaomi");
+    jstring new_model = env->NewStringUTF("23127PN0CC");
+    jstring new_device = env->NewStringUTF("shennong");
+    jstring new_product = env->NewStringUTF("shennong");
+    
+    // 修改 BRAND
     jfieldID brand_id = env->GetStaticFieldID(build_class, "BRAND", "Ljava/lang/String;");
     if (brand_id != nullptr) {
         env->SetStaticObjectField(build_class, brand_id, new_brand);
     }
 
+    // 修改 MANUFACTURER
     jfieldID manufacturer_id = env->GetStaticFieldID(build_class, "MANUFACTURER", "Ljava/lang/String;");
     if (manufacturer_id != nullptr) {
         env->SetStaticObjectField(build_class, manufacturer_id, new_manufacturer);
     }
+    
+    // 修改 MODEL
+    jfieldID model_id = env->GetStaticFieldID(build_class, "MODEL", "Ljava/lang/String;");
+    if (model_id != nullptr) {
+        env->SetStaticObjectField(build_class, model_id, new_model);
+    }
+    
+    // 修改 DEVICE
+    jfieldID device_id = env->GetStaticFieldID(build_class, "DEVICE", "Ljava/lang/String;");
+    if (device_id != nullptr) {
+        env->SetStaticObjectField(build_class, device_id, new_device);
+    }
+    
+    // 修改 PRODUCT
+    jfieldID product_id = env->GetStaticFieldID(build_class, "PRODUCT", "Ljava/lang/String;");
+    if (product_id != nullptr) {
+        env->SetStaticObjectField(build_class, product_id, new_product);
+    }
 
     env->DeleteLocalRef(new_brand);
     env->DeleteLocalRef(new_manufacturer);
+    env->DeleteLocalRef(new_model);
+    env->DeleteLocalRef(new_device);
+    env->DeleteLocalRef(new_product);
 
     LOGD("hook Build done");
 }
